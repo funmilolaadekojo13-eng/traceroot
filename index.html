@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TraceRoot — AI Medical Advocacy for Nigerian Patients</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Manrope', 'sans-serif'] } } } }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::selection { background: rgba(16,185,129,0.2); color: #065f46; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+        body { font-family: 'Manrope', sans-serif; background: #ffffff; color: #1e293b; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        .page { display: none; } .page.active { display: block; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes confetti-fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100px) rotate(720deg); opacity: 0; } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+        .animate-fade-up { animation: fadeInUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .animate-float { animation: float 5s ease-in-out infinite; }
+        .delay-100 { animation-delay: 100ms; } .delay-200 { animation-delay: 200ms; } .delay-400 { animation-delay: 400ms; } .delay-700 { animation-delay: 700ms; }
+        .reveal { opacity: 0; transform: translateY(24px); transition: all 0.7s cubic-bezier(0.16,1,0.3,1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        .feature-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden; }
+        .feature-card:hover { border-color: #10b981; box-shadow: 0 8px 30px rgba(16,185,129,0.1); transform: translateY(-3px); }
+        .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #10b981, #34d399); opacity: 0; transition: opacity 0.3s; }
+        .feature-card:hover::before { opacity: 1; }
+
+        .cta-btn { background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600; font-size: 0.875rem; padding: 12px 28px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(16,185,129,0.25); }
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16,185,129,0.35); }
+        .cta-btn-outline { background: transparent; color: #059669; font-weight: 600; font-size: 0.875rem; padding: 12px 28px; border-radius: 12px; border: 2px solid #10b981; cursor: pointer; transition: all 0.3s; }
+        .cta-btn-outline:hover { background: #f0fdf4; transform: translateY(-2px); }
+        .section-green { background: #f0fdf4; }
+
+        .marquee-track { display: flex; gap: 3rem; animation: marquee 25s linear infinite; }
+        .toast { position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%) translateY(100px); z-index: 100; background: #065f46; border: 1px solid #10b981; border-radius: 12px; padding: 14px 24px; opacity: 0; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .drug-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; transition: all 0.3s; cursor: pointer; }
+        .severity-safe { background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; } .severity-safe:hover { background: #d1fae5; }
+        .severity-caution { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; } .severity-caution:hover { background: #fef3c7; }
+        .severity-danger { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; } .severity-danger:hover { background: #fee2e2; }
+        .severity-neutral { background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; } .severity-neutral:hover { background: #f1f5f9; }
+
+        .onboard-step { display: none; } .onboard-step.active { display: flex; }
+        .step-option { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 12px; }
+        .step-option:hover { border-color: #6ee7b7; background: #f0fdf4; } .step-option.selected { border-color: #10b981; background: #ecfdf5; }
+        .step-option .radio-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; transition: all 0.25s; flex-shrink: 0; }
+        .step-option.selected .radio-dot { border-color: #10b981; background: #10b981; }
+        .step-option.selected .radio-dot::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+        .checkbox-item { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 10px; font-size: 0.875rem; }
+        .checkbox-item:hover { border-color: #6ee7b7; } .checkbox-item.selected { border-color: #10b981; background: #ecfdf5; }
+        .checkbox-item .check-box { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; transition: all 0.25s; flex-shrink: 0; }
+        .checkbox-item.selected .check-box { border-color: #10b981; background: #10b981; }
+        .checkbox-item.selected .check-box::after { content: '✓'; color: white; font-size: 10px; font-weight: 700; }
+        .progress-dot { width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s; }
+        .progress-dot.active { background: #10b981; width: 28px; border-radius: 5px; } .progress-dot.done { background: #10b981; }
+
+        .dash-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; transition: all 0.3s; }
+        .dash-feature-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+        .dash-feature-card:hover { border-color: #10b981; box-shadow: 0 8px 30px rgba(16,185,129,0.12); transform: translateY(-3px); }
+        .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; font-size: 0.875rem; color: #64748b; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+        .sidebar-item:hover { background: #f0fdf4; color: #059669; } .sidebar-item.active { background: #ecfdf5; color: #059669; font-weight: 600; }
+        .form-input { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.875rem; font-family: 'Manrope', sans-serif; color: #1e293b; transition: border-color 0.3s; background: #ffffff; outline: none; }
+        .form-input:focus { border-color: #10b981; } .form-input::placeholder { color: #94a3b8; }
+        .badge-shimmer { background: linear-gradient(90deg, #ecfdf5, #d1fae5, #ecfdf5); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+        .confetti-piece { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: confetti-fall 1.5s ease-out forwards; }
+        .nav-scrolled { background: rgba(255,255,255,0.9) !important; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .dash-view { display: none; } .dash-view.active { display: block; }
+        .lang-toggle { padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.25s; border: 2px solid #e2e8f0; background: #fff; color: #64748b; }
+        .lang-toggle.active { border-color: #10b981; background: #ecfdf5; color: #059669; }
+        .profile-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; min-width: 260px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); z-index: 50; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: all 0.25s; }
+        .profile-dropdown.open { opacity: 1; transform: translateY(0); pointer-events: all; }
+        
+        /* Mobile Scroll Snap Carousels */
+        .mobile-scroll { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 16px; padding-bottom: 16px; -webkit-overflow-scrolling: touch; }
+        .mobile-scroll::-webkit-scrollbar { display: none; }
+        .mobile-scroll > * { scroll-snap-align: start; flex-shrink: 0; }
+        @media(min-width: 768px) { .mobile-scroll { display: grid; overflow: visible; gap: 24px; } .mobile-scroll > * { flex-shrink: 1; } }
+        
+        /* Mobile Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e2e8f0; z-index: 40; padding: 8px 0 env(safe-area-inset-bottom, 8px); }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-weight: 600; color: #94a3b8; cursor: pointer; padding: 4px; transition: color 0.2s; }
+        .bottom-nav-item.active { color: #059669; }
+        
+        #heroCanvas { touch-action: none; }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"><div class="flex items-center gap-3"><iconify-icon icon="mdi:check-circle" class="text-emerald-300 text-lg"></iconify-icon><span id="toastMsg" class="text-sm text-white font-medium"></span></div></div>
+
+<!-- ================= PAGE: LANDING ================= -->
+<div id="page-landing" class="page active">
+    <nav id="landingNav" class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 bg-white/70 backdrop-blur-xl border-b border-transparent">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 group" onclick="navigateTo('landing')">
+                <svg class="w-8 h-8 md:w-9 md:h-9 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#059669"/><path d="M12 28V18C12 14.686 14.686 12 18 12H22" stroke="white" stroke-width="3" stroke-linecap="round"/><path d="M22 12C25 12 28 14 28 18C28 22 25 24 22 24H18" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="12" r="2.5" fill="#6EE7B7"/><circle cx="12" cy="28" r="2.5" fill="#6EE7B7"/></svg>
+                <span class="font-bold text-slate-900 tracking-tight text-base md:text-lg">Trace<span class="text-emerald-600">Root</span></span>
+            </a>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#problem" class="text-sm text-slate-500 hover:text-emerald-600 transition-colors font-medium">The Problem</a>
+                <a href="#features" class="text-sm text-slate-500 hover:text-emerald-600 transition-colors font-medium">Features</a>
+                <a href="#pantry" class="text-sm text-slate-500 hover:text-emerald-600 transition-colors font-medium">Pantry</a>
+            </div>
+            <div class="hidden md:flex items-center gap-3">
+                <button class="text-sm font-semibold text-emerald-700 hover:text-emerald-800 px-4 py-2 rounded-lg hover:bg-emerald-50 transition-all" onclick="navigateTo('onboarding')">Log In</button>
+                <button class="cta-btn text-xs !py-2.5 !px-5" onclick="navigateTo('onboarding')">Get Started Free</button>
+            </div>
+            <button class="md:hidden text-slate-700 p-2" onclick="toggleMobile()"><iconify-icon icon="mdi:menu" class="text-2xl"></iconify-icon></button>
+        </div>
+    </nav>
+    <div id="mobileMenu" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center gap-6 transition-transform duration-300 transform translate-x-full">
+        <button class="absolute top-4 right-4 text-slate-700" onclick="toggleMobile()"><iconify-icon icon="mdi:close" class="text-3xl"></iconify-icon></button>
+        <a href="#problem" class="text-xl font-semibold text-slate-700" onclick="toggleMobile()">The Problem</a>
+        <a href="#features" class="text-xl font-semibold text-slate-700" onclick="toggleMobile()">Features</a>
+        <a href="#pantry" class="text-xl font-semibold text-slate-700" onclick="toggleMobile()">Pantry</a>
+        <button class="cta-btn mt-4" onclick="toggleMobile();navigateTo('onboarding')">Get Started Free</button>
+    </div>
+
+    <section class="relative min-h-screen flex items-center overflow-hidden pt-14">
+        <canvas id="heroCanvas" class="absolute inset-0 z-0"></canvas>
+        <div class="absolute top-20 right-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-emerald-100/40 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 md:px-6 py-16 md:py-20 text-center">
+            <div class="animate-fade-up opacity-0 inline-flex items-center gap-2 badge-shimmer px-3 py-1.5 rounded-full border border-emerald-200 mb-6 md:mb-8">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[10px] md:text-xs font-semibold text-emerald-700 tracking-wide uppercase">AI Medical Advocacy — Built for Nigeria</span>
+            </div>
+            <h1 class="animate-fade-up opacity-0 delay-200 text-3xl md:text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-4 md:mb-6 text-slate-900">Find the cause,<br>not just the cure.</h1>
+            <p class="animate-fade-up opacity-0 delay-400 text-slate-500 text-sm md:text-base md:text-lg max-w-xl md:max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed">TraceRoot doesn't diagnose — it makes you impossible to dismiss. AI-powered symptom tracing, advocacy briefs, lab translation, and drug interaction checks.</p>
+            <div class="animate-fade-up opacity-0 delay-700 flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
+                <button class="cta-btn flex items-center gap-2 text-sm md:text-base w-full sm:w-auto justify-center !py-3.5 md:!py-4 !px-6 md:!px-8" onclick="navigateTo('onboarding')"><iconify-icon icon="mdi:stethoscope" class="text-lg"></iconify-icon>Start For Free</button>
+                <button class="cta-btn-outline flex items-center gap-2 text-sm md:text-base w-full sm:w-auto justify-center !py-3.5 md:!py-4" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})"><iconify-icon icon="mdi:arrow-down" class="text-lg"></iconify-icon>See How It Works</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="overflow-hidden py-4 border-y border-slate-100 bg-slate-50/50">
+        <div class="marquee-track">
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">SYMPTOM CHECKER</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">ADVOCACY BRIEF</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">MEDICAL TRANSLATION</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">DRUG INTERACTION CHECK</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">ROOT CAUSE ANALYSIS</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">PATIENT ADVOCACY</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">SYMPTOM CHECKER</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">ADVOCACY BRIEF</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">MEDICAL TRANSLATION</span><span class="text-emerald-300">·</span>
+            <span class="text-slate-300 text-xs whitespace-nowrap font-medium">DRUG INTERACTION CHECK</span><span class="text-emerald-300">·</span>
+        </div>
+    </div>
+
+    <section id="problem" class="py-16 md:py-32">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="reveal text-center mb-10 md:mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-200 bg-red-50 mb-4 md:mb-6"><iconify-icon icon="mdi:alert-circle" class="text-red-500 text-sm"></iconify-icon><span class="text-[10px] md:text-xs font-semibold text-red-600 tracking-wide uppercase">The Reality</span></div>
+                <h2 class="text-2xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 text-slate-900">People Die From<br>Conditions That Were<br><span class="text-red-500">Entirely Reversible</span></h2>
+                <p class="text-slate-500 max-w-xl md:max-w-2xl mx-auto text-sm md:text-base">Nigerian patients are routinely treated for symptoms while root causes go uninvestigated.</p>
+            </div>
+            <div class="mobile-scroll md:grid-cols-2 lg:grid-cols-4">
+                <div class="reveal feature-card p-5 md:p-6 w-[260px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:clock-fast" class="text-red-500 text-lg md:text-xl"></iconify-icon></div><h3 class="font-semibold text-slate-900 text-sm md:text-base mb-1 md:mb-2">7-Minute Consultations</h3><p class="text-xs md:text-sm text-slate-500">Doctors are overworked. Not enough time to connect the dots.</p></div>
+                <div class="reveal feature-card p-5 md:p-6 w-[260px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:currency-ngn" class="text-red-500 text-lg md:text-xl"></iconify-icon></div><h3 class="font-semibold text-slate-900 text-sm md:text-base mb-1 md:mb-2">Tests Are Expensive</h3><p class="text-xs md:text-sm text-slate-500">Money is wasted on the wrong tests without knowing what to ask for.</p></div>
+                <div class="reveal feature-card p-5 md:p-6 w-[260px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:account-voice-off" class="text-red-500 text-lg md:text-xl"></iconify-icon></div><h3 class="font-semibold text-slate-900 text-sm md:text-base mb-1 md:mb-2">Patients Have No Voice</h3><p class="text-xs md:text-sm text-slate-500">When you can't articulate what's wrong, you get dismissed.</p></div>
+                <div class="reveal feature-card p-5 md:p-6 w-[260px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:link-variant-off" class="text-red-500 text-lg md:text-xl"></iconify-icon></div><h3 class="font-semibold text-slate-900 text-sm md:text-base mb-1 md:mb-2">No One Connects the Dots</h3><p class="text-xs md:text-sm text-slate-500">Symptoms are treated in isolation. The root cause is never traced.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="section-green py-16 md:py-32">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="reveal text-center mb-10 md:mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-200 bg-emerald-50 mb-4 md:mb-6"><iconify-icon icon="mdi:shield-check" class="text-emerald-600 text-sm"></iconify-icon><span class="text-[10px] md:text-xs font-semibold text-emerald-700 tracking-wide uppercase">Four Live Features</span></div>
+                <h2 class="text-2xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 text-slate-900">Your Medical <span class="text-emerald-600">Advocacy Toolkit</span></h2>
+            </div>
+            <div class="mobile-scroll md:grid-cols-2">
+                <div class="reveal feature-card p-5 md:p-8 w-[280px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:magnify-scan" class="text-emerald-600 text-lg md:text-xl"></iconify-icon></div><h3 class="text-base md:text-xl font-bold mb-1 md:mb-2 text-slate-900">Symptom Checker</h3><p class="text-slate-500 text-xs md:text-sm leading-relaxed mb-3">Describe how you feel. AI traces the root cause chain your doctor may have missed.</p><button class="text-xs md:text-sm text-emerald-600 font-semibold" onclick="navigateTo('onboarding')">Try it now →</button></div>
+                <div class="reveal feature-card p-5 md:p-8 w-[280px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-amber-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:shield-sword" class="text-amber-600 text-lg md:text-xl"></iconify-icon></div><h3 class="text-base md:text-xl font-bold mb-1 md:mb-2 text-slate-900">Advocacy Brief</h3><p class="text-slate-500 text-xs md:text-sm leading-relaxed mb-3">Exact questions and tests to demand. Not a diagnosis — a weapon.</p><button class="text-xs md:text-sm text-amber-600 font-semibold" onclick="navigateTo('onboarding')">Try it now →</button></div>
+                <div class="reveal feature-card p-5 md:p-8 w-[280px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:translate" class="text-blue-600 text-lg md:text-xl"></iconify-icon></div><h3 class="text-base md:text-xl font-bold mb-1 md:mb-2 text-slate-900">Medical Translation</h3><p class="text-slate-500 text-xs md:text-sm leading-relaxed mb-3">Lab results in plain English or Nigerian Pidgin. Exportable as PDF.</p><button class="text-xs md:text-sm text-blue-600 font-semibold" onclick="navigateTo('onboarding')">Try it now →</button></div>
+                <div class="reveal feature-card p-5 md:p-8 w-[280px] md:w-auto"><div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-3 md:mb-4"><iconify-icon icon="mdi:pill" class="text-purple-600 text-lg md:text-xl"></iconify-icon></div><h3 class="text-base md:text-xl font-bold mb-1 md:mb-2 text-slate-900">Drug Interaction Checker</h3><p class="text-slate-500 text-xs md:text-sm leading-relaxed mb-3">Check prescriptions, chemist drugs, and supplements for dangerous combos.</p><button class="text-xs md:text-sm text-purple-600 font-semibold" onclick="navigateTo('onboarding')">Try it now →</button></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pantry" class="py-16 md:py-32">
+        <div class="max-w-4xl mx-auto px-4 md:px-6">
+            <div class="reveal text-center mb-10 md:mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-200 bg-amber-50 mb-4 md:mb-6"><iconify-icon icon="mdi:clock-outline" class="text-amber-600 text-sm"></iconify-icon><span class="text-[10px] md:text-xs font-semibold text-amber-700 tracking-wide uppercase">Coming Soon</span></div>
+                <h2 class="text-2xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 text-slate-900">TraceRoot's <span class="text-amber-600">Pantry</span></h2>
+                <p class="text-slate-500 max-w-xl md:max-w-2xl mx-auto text-sm md:text-base">A Nigerian dietary guide covering foods, spices, drinks, fruits, and traditional teas tailored to specific health conditions.</p>
+            </div>
+            <div class="reveal feature-card p-5 md:p-12">
+                <div class="grid grid-cols-2 gap-4 md:gap-8 mb-6 md:mb-0 md:grid-cols-2">
+                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 md:p-4 text-center"><div class="text-2xl md:text-3xl mb-1 md:mb-2">🥘</div><div class="text-[10px] md:text-xs text-slate-600 font-medium">Soups & Stews</div><div class="text-[10px] md:text-xs text-amber-600">Egusi, Okra, Efo</div></div>
+                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 md:p-4 text-center"><div class="text-2xl md:text-3xl mb-1 md:mb-2">🍚</div><div class="text-[10px] md:text-xs text-slate-600 font-medium">Swallow & Rice</div><div class="text-[10px] md:text-xs text-amber-600">Fufu, Jollof</div></div>
+                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 md:p-4 text-center"><div class="text-2xl md:text-3xl mb-1 md:mb-2">🧄</div><div class="text-[10px] md:text-xs text-slate-600 font-medium">Spices & Herbs</div><div class="text-[10px] md:text-xs text-amber-600">Turmeric, Dawadawa</div></div>
+                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 md:p-4 text-center"><div class="text-2xl md:text-3xl mb-1 md:mb-2">🥤</div><div class="text-[10px] md:text-xs text-slate-600 font-medium">Drinks & Teas</div><div class="text-[10px] md:text-xs text-amber-600">Zobo, Kunu, Agbo</div></div>
+                </div>
+                <div class="pt-6 md:pt-8 border-t border-slate-100">
+                    <div class="flex flex-col sm:flex-row items-center gap-3">
+                        <input type="email" id="waitlistEmail" placeholder="Enter your email for early access" class="flex-1 w-full form-input text-sm">
+                        <button onclick="handleWaitlist()" class="cta-btn whitespace-nowrap !bg-gradient-to-r !from-amber-500 !to-orange-500 w-full sm:w-auto" style="box-shadow:0 4px 15px rgba(245,158,11,0.25)">Join Waitlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 md:py-32 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-600 to-emerald-800"></div>
+        <div class="max-w-4xl mx-auto px-4 md:px-6 text-center relative z-10">
+            <div class="reveal">
+                <h2 class="text-2xl md:text-5xl font-extrabold tracking-tight mb-4 md:mb-6 text-white">Stop Leaving Your Health<br>To Chance</h2>
+                <p class="text-emerald-100/80 max-w-md md:max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed text-sm md:text-base">Every day without TraceRoot is another day you could be dismissed or sent home without answers.</p>
+                <button class="bg-white text-emerald-700 font-bold text-sm md:text-base py-3.5 md:py-4 px-8 rounded-xl hover:bg-emerald-50 transition-all shadow-lg" onclick="navigateTo('onboarding')">Get Started Free</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-slate-100 py-8 md:py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 flex flex-col items-center gap-3">
+            <div class="flex items-center gap-2"><svg class="w-7 h-7" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#059669"/><path d="M12 28V18C12 14.686 14.686 12 18 12H22" stroke="white" stroke-width="3" stroke-linecap="round"/><path d="M22 12C25 12 28 14 28 18C28 22 25 24 22 24H18" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="12" r="2.5" fill="#6EE7B7"/><circle cx="12" cy="28" r="2.5" fill="#6EE7B7"/></svg><span class="font-bold text-slate-900 text-sm">Trace<span class="text-emerald-600">Root</span></span></div>
+            <p class="text-[10px] md:text-xs text-slate-400 text-center">© 2026 TraceRoot. All rights reserved. Not a medical device.</p>
+        </div>
+    </footer>
+</div>
+
+<!-- ================= PAGE: ONBOARDING ================= -->
+<div id="page-onboarding" class="page">
+    <div class="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white flex flex-col items-center justify-center px-4 md:px-6 py-8">
+        <a href="#" class="flex items-center gap-2 mb-6" onclick="navigateTo('landing')">
+            <svg class="w-9 h-9" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#059669"/><path d="M12 28V18C12 14.686 14.686 12 18 12H22" stroke="white" stroke-width="3" stroke-linecap="round"/><path d="M22 12C25 12 28 14 28 18C28 22 25 24 22 24H18" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="12" r="2.5" fill="#6EE7B7"/><circle cx="12" cy="28" r="2.5" fill="#6EE7B7"/></svg>
+            <span class="font-bold text-slate-900 text-lg">Trace<span class="text-emerald-600">Root</span></span>
+        </a>
+        <div class="flex items-center gap-2 mb-8"><div class="progress-dot active" data-step="1"></div><div class="progress-dot" data-step="2"></div><div class="progress-dot" data-step="3"></div><div class="progress-dot" data-step="4"></div></div>
+        <div class="w-full max-w-lg">
+            <div class="onboard-step active flex-col items-center" data-step="1"><div class="feature-card p-6 md:p-10 w-full text-center"><div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-4"><iconify-icon icon="mdi:hand-wave" class="text-emerald-600 text-2xl"></iconify-icon></div><h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-2">Welcome to TraceRoot</h2><p class="text-slate-500 mb-6 text-sm">We make you impossible to dismiss.</p><button class="cta-btn w-full text-base !py-3.5" onclick="goToStep(2)">Let's Begin →</button></div></div>
+            <div class="onboard-step flex-col items-center" data-step="2"><div class="feature-card p-6 md:p-10 w-full"><div class="text-center mb-4"><h2 class="text-lg md:text-xl font-bold text-slate-900 mb-1">What brings you here?</h2><p class="text-slate-500 text-xs md:text-sm">Select all that apply.</p></div><div class="space-y-2 mb-6"><div class="checkbox-item !text-sm" onclick="toggleCheckbox(this)"><div class="check-box"></div><span>I've been dismissed by a doctor</span></div><div class="checkbox-item !text-sm" onclick="toggleCheckbox(this)"><div class="check-box"></div><span>I have unexplained symptoms</span></div><div class="checkbox-item !text-sm" onclick="toggleCheckbox(this)"><div class="check-box"></div><span>I need help understanding lab results</span></div><div class="checkbox-item !text-sm" onclick="toggleCheckbox(this)"><div class="check-box"></div><span>I want to check drug interactions</span></div><div class="checkbox-item !text-sm" onclick="toggleCheckbox(this)"><div class="check-box"></div><span>I'm preparing for a doctor's visit</span></div></div><div class="flex gap-3"><button class="cta-btn-outline flex-1 !py-3 text-sm" onclick="goToStep(1)">← Back</button><button class="cta-btn flex-1 !py-3 text-sm" onclick="goToStep(3)">Continue →</button></div></div></div>
+            <div class="onboard-step flex-col items-center" data-step="3"><div class="feature-card p-6 md:p-10 w-full"><div class="text-center mb-4"><h2 class="text-lg md:text-xl font-bold text-slate-900 mb-1">About You</h2><p class="text-slate-500 text-xs md:text-sm">Helps us personalize insights.</p></div><div class="space-y-3 mb-6"><div><label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Full Name</label><input type="text" id="userName" placeholder="e.g. Adaeze Okonkwo" class="form-input"></div><div class="grid grid-cols-2 gap-3"><div><label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Age</label><input type="number" id="userAge" placeholder="28" class="form-input"></div><div><label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Gender</label><select id="userGender" class="form-input"><option value="">Select</option><option value="Female">Female</option><option value="Male">Male</option><option value="Other">Other</option></select></div></div><div><label class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Blood Type <span class="normal-case text-slate-400">(optional)</span></label><select id="userBlood" class="form-input"><option value="">Not sure</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div></div><div class="flex gap-3"><button class="cta-btn-outline flex-1 !py-3 text-sm" onclick="goToStep(2)">← Back</button><button class="cta-btn flex-1 !py-3 text-sm" onclick="goToStep(4)">Continue →</button></div></div></div>
+            <div class="onboard-step flex-col items-center" data-step="4"><div class="feature-card p-6 md:p-10 w-full"><div class="text-center mb-4"><h2 class="text-lg md:text-xl font-bold text-slate-900 mb-1">Preferred Language</h2><p class="text-slate-500 text-xs md:text-sm">We'll explain results in your language.</p></div><div class="space-y-2 mb-6"><div class="step-option" onclick="selectOption(this,'language')"><div class="radio-dot"></div><div><div class="font-semibold text-slate-800 text-sm">English</div></div></div><div class="step-option" onclick="selectOption(this,'language')"><div class="radio-dot"></div><div><div class="font-semibold text-slate-800 text-sm">Nigerian Pidgin</div></div></div><div class="step-option" onclick="selectOption(this,'language')"><div class="radio-dot"></div><div><div class="font-semibold text-slate-800 text-sm">Yorùbá</div></div></div><div class="step-option" onclick="selectOption(this,'language')"><div class="radio-dot"></div><div><div class="font-semibold text-slate-800 text-sm">Igbo</div></div></div><div class="step-option" onclick="selectOption(this,'language')"><div class="radio-dot"></div><div><div class="font-semibold text-slate-800 text-sm">Hausa</div></div></div></div><div class="flex gap-3"><button class="cta-btn-outline flex-1 !py-3 text-sm" onclick="goToStep(3)">← Back</button><button class="cta-btn flex-1 !py-3 text-sm" onclick="completeOnboarding()">Launch 🚀</button></div></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= PAGE: DASHBOARD ================= -->
+<div id="page-dashboard" class="page">
+    <div class="flex min-h-screen bg-slate-50 pb-20 lg:pb-0">
+        <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-100 p-5 sticky top-0 h-screen">
+            <div class="flex items-center gap-2 mb-8"><svg class="w-9 h-9" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#059669"/><path d="M12 28V18C12 14.686 14.686 12 18 12H22" stroke="white" stroke-width="3" stroke-linecap="round"/><path d="M22 12C25 12 28 14 28 18C28 22 25 24 22 24H18" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="12" r="2.5" fill="#6EE7B7"/><circle cx="12" cy="28" r="2.5" fill="#6EE7B7"/></svg><span class="font-bold text-slate-900 text-lg">Trace<span class="text-emerald-600">Root</span></span></div>
+            <nav class="space-y-1 flex-1">
+                <div class="sidebar-item active" onclick="switchDashView('home', this)"><iconify-icon icon="mdi:home" class="text-xl"></iconify-icon>Home</div>
+                <div class="sidebar-item" onclick="switchDashView('symptoms', this)"><iconify-icon icon="mdi:magnify-scan" class="text-xl"></iconify-icon>Symptom Checker</div>
+                <div class="sidebar-item" onclick="switchDashView('advocacy', this)"><iconify-icon icon="mdi:shield-sword" class="text-xl"></iconify-icon>Advocacy Brief</div>
+                <div class="sidebar-item" onclick="switchDashView('translate', this)"><iconify-icon icon="mdi:translate" class="text-xl"></iconify-icon>Translate Labs</div>
+                <div class="sidebar-item" onclick="switchDashView('drugs', this)"><iconify-icon icon="mdi:pill" class="text-xl"></iconify-icon>Drug Checker</div>
+            </nav>
+            <div class="border-t border-slate-100 pt-4"><div class="sidebar-item" onclick="navigateTo('landing')"><iconify-icon icon="mdi:logout" class="text-xl"></iconify-icon>Sign Out</div></div>
+        </aside>
+
+        <main class="flex-1">
+            <header class="bg-white border-b border-slate-100 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between sticky top-0 z-20">
+                <div class="flex items-center gap-2 lg:hidden"><svg class="w-7 h-7" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#059669"/><path d="M12 28V18C12 14.686 14.686 12 18 12H22" stroke="white" stroke-width="3" stroke-linecap="round"/><path d="M22 12C25 12 28 14 28 18C28 22 25 24 22 24H18" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="12" r="2.5" fill="#6EE7B7"/><circle cx="12" cy="28" r="2.5" fill="#6EE7B7"/></svg><span class="font-bold text-slate-900 text-sm">Trace<span class="text-emerald-600">Root</span></span></div>
+                <div class="hidden lg:block"><h1 class="text-lg font-bold text-slate-900">Welcome back, <span id="dashUserName" class="text-emerald-600">there</span></h1></div>
+                <div class="relative">
+                    <button class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs cursor-pointer" id="dashAvatarBtn" onclick="toggleProfile()">T</button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold" id="profileInitial">T</div><div><div class="font-bold text-slate-900 text-sm" id="profileName">—</div><div class="text-[10px] text-slate-400">Patient</div></div></div>
+                        <div class="space-y-1.5 border-t border-slate-100 pt-3">
+                            <div class="flex justify-between text-xs"><span class="text-slate-400">Age</span><span class="font-semibold text-slate-700" id="profileAge">—</span></div>
+                            <div class="flex justify-between text-xs"><span class="text-slate-400">Gender</span><span class="font-semibold text-slate-700" id="profileGender">—</span></div>
+                            <div class="flex justify-between text-xs"><span class="text-slate-400">Blood</span><span class="font-semibold text-slate-700" id="profileBlood">—</span></div>
+                            <div class="flex justify-between text-xs"><span class="text-slate-400">Language</span><span class="font-semibold text-emerald-600" id="profileLang">English</span></div>
+                        </div>
+                        <button class="w-full mt-3 text-xs text-center text-red-500 font-semibold py-2 rounded-lg hover:bg-red-50" onclick="navigateTo('landing')">Sign Out</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-4 md:p-8 max-w-6xl">
+                <!-- HOME -->
+                <div class="dash-view active" id="dash-home">
+                    <div class="mb-6 lg:hidden"><h2 class="text-base font-bold text-slate-900">Hi, <span id="dashUserNameMobile" class="text-emerald-600">there</span> 👋</h2><p class="text-xs text-slate-400">What would you like to do?</p></div>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+                        <div class="dash-feature-card !p-4 md:!p-6" onclick="switchDashView('symptoms',null)"><div class="w-9 h-9 md:w-11 md:h-11 rounded-xl bg-emerald-100 flex items-center justify-center mb-2 md:mb-4"><iconify-icon icon="mdi:magnify-scan" class="text-emerald-600 text-base md:text-xl"></iconify-icon></div><h3 class="font-bold text-slate-900 text-xs md:text-base mb-0.5">Symptoms</h3><p class="text-[10px] md:text-xs text-slate-500 hidden md:block">Trace the root cause.</p></div>
+                        <div class="dash-feature-card !p-4 md:!p-6" onclick="switchDashView('advocacy',null)"><div class="w-9 h-9 md:w-11 md:h-11 rounded-xl bg-amber-100 flex items-center justify-center mb-2 md:mb-4"><iconify-icon icon="mdi:shield-sword" class="text-amber-600 text-base md:text-xl"></iconify-icon></div><h3 class="font-bold text-slate-900 text-xs md:text-base mb-0.5">Advocacy</h3><p class="text-[10px] md:text-xs text-slate-500 hidden md:block">Questions & tests.</p></div>
+                        <div class="dash-feature-card !p-4 md:!p-6" onclick="switchDashView('translate',null)"><div class="w-9 h-9 md:w-11 md:h-11 rounded-xl bg-blue-100 flex items-center justify-center mb-2 md:mb-4"><iconify-icon icon="mdi:translate" class="text-blue-600 text-base md:text-xl"></iconify-icon></div><h3 class="font-bold text-slate-900 text-xs md:text-base mb-0.5">Labs</h3><p class="text-[10px] md:text-xs text-slate-500 hidden md:block">Understand results.</p></div>
+                        <div class="dash-feature-card !p-4 md:!p-6" onclick="switchDashView('drugs',null)"><div class="w-9 h-9 md:w-11 md:h-11 rounded-xl bg-purple-100 flex items-center justify-center mb-2 md:mb-4"><iconify-icon icon="mdi:pill" class="text-purple-600 text-base md:text-xl"></iconify-icon></div><h3 class="font-bold text-slate-900 text-xs md:text-base mb-0.5">Drugs</h3><p class="text-[10px] md:text-xs text-slate-500 hidden md:block">Check interactions.</p></div>
+                    </div>
+                    <div class="dash-card"><h3 class="font-bold text-slate-900 text-sm mb-3">Your Profile</h3><div class="grid grid-cols-2 gap-3"><div><div class="text-[10px] text-slate-400">Name</div><div class="text-xs font-semibold text-slate-700" id="d-name">—</div></div><div><div class="text-[10px] text-slate-400">Age</div><div class="text-xs font-semibold text-slate-700" id="d-age">—</div></div><div><div class="text-[10px] text-slate-400">Gender</div><div class="text-xs font-semibold text-slate-700" id="d-gender">—</div></div><div><div class="text-[10px] text-slate-400">Language</div><div class="text-xs font-semibold text-emerald-600" id="d-lang">English</div></div></div></div>
+                </div>
+
+                <!-- SYMPTOMS -->
+                <div class="dash-view" id="dash-symptoms">
+                    <button class="text-xs text-slate-500 hover:text-emerald-600 mb-3 font-semibold" onclick="switchDashView('home',null)">← Home</button>
+                    <div class="dash-card">
+                        <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-1">How are you feeling?</h2>
+                        <p class="text-xs md:text-sm text-slate-500 mb-4">Just tell me in your own words.</p>
+                        <textarea id="symptomTextarea" rows="3" placeholder="e.g. I've had a pounding headache for two weeks, worst in the morning..." class="form-input resize-none text-sm mb-3"></textarea>
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                            <button onclick="setSymptomPreset('Pounding headache for 2 weeks, worst in the morning. Dizzy when I stand.')" class="text-[10px] md:text-xs px-2.5 py-1 rounded-full border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all font-medium">Headaches</button>
+                            <button onclick="setSymptomPreset('Always tired, legs swell by evening, keep waking up to pee at night.')" class="text-[10px] md:text-xs px-2.5 py-1 rounded-full border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all font-medium">Fatigue</button>
+                        </div>
+                        <button class="cta-btn w-full md:w-auto text-sm" onclick="analyzeSymptoms()"><iconify-icon icon="mdi:magnify-scan" class="mr-1"></iconify-icon>Trace the Root Cause</button>
+                        <div id="symptomOutput" class="mt-4"></div>
+                    </div>
+                </div>
+
+                <!-- ADVOCACY -->
+                <div class="dash-view" id="dash-advocacy">
+                    <button class="text-xs text-slate-500 hover:text-emerald-600 mb-3 font-semibold" onclick="switchDashView('home',null)">← Home</button>
+                    <div class="dash-card">
+                        <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-1">Advocacy Brief</h2>
+                        <p class="text-xs md:text-sm text-slate-500 mb-4">I'll give you the exact questions to ask and tests to request.</p>
+                        <textarea id="advocacyInput" rows="2" placeholder="Describe what you're experiencing..." class="form-input resize-none text-sm mb-3"></textarea>
+                        <button class="cta-btn w-full md:w-auto text-sm !bg-gradient-to-r !from-amber-500 !to-orange-500" onclick="generateBrief()"><iconify-icon icon="mdi:shield-sword" class="mr-1"></iconify-icon>Generate Brief</button>
+                        <div id="briefOutput" class="mt-4 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- TRANSLATE -->
+                <div class="dash-view" id="dash-translate">
+                    <button class="text-xs text-slate-500 hover:text-emerald-600 mb-3 font-semibold" onclick="switchDashView('home',null)">← Home</button>
+                    <div class="dash-card">
+                        <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-1">Translate Lab Results</h2>
+                        <p class="text-xs md:text-sm text-slate-500 mb-4">Paste or upload your results.</p>
+                        <div class="mb-3"><div class="flex flex-wrap gap-1.5" id="langToggles"><button class="lang-toggle active !text-xs" onclick="setLang(this,'English')">English</button><button class="lang-toggle !text-xs" onclick="setLang(this,'Pidgin')">Pidgin</button><button class="lang-toggle !text-xs" onclick="setLang(this,'Yorùbá')">Yorùbá</button><button class="lang-toggle !text-xs" onclick="setLang(this,'Igbo')">Igbo</button><button class="lang-toggle !text-xs" onclick="setLang(this,'Hausa')">Hausa</button></div></div>
+                        <textarea id="labInput" rows="2" placeholder="e.g. HbA1c 7.2%, FBS 142" class="form-input resize-none text-sm mb-3"></textarea>
+                        <div class="border-2 border-dashed border-slate-200 rounded-xl p-3 text-center hover:border-emerald-300 transition-colors cursor-pointer mb-3" onclick="document.getElementById('labFileInput').click()">
+                            <iconify-icon icon="mdi:camera" class="text-xl text-slate-400"></iconify-icon>
+                            <div class="text-[10px] text-slate-500 font-medium">Take photo or upload</div>
+                            <input type="file" id="labFileInput" class="hidden" accept="image/*,.pdf" onchange="handleLabFile(event)">
+                        </div>
+                        <div id="labFileName" class="hidden text-[10px] text-emerald-600 font-medium mb-2"><iconify-icon icon="mdi:file-check" class="text-xs"></iconify-icon><span></span></div>
+                        <button class="cta-btn w-full md:w-auto text-sm !bg-gradient-to-r !from-blue-500 !to-indigo-500" onclick="translateLab()"><iconify-icon icon="mdi:translate" class="mr-1"></iconify-icon>Translate</button>
+                        <div id="translateOutput" class="mt-4 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- DRUGS -->
+                <div class="dash-view" id="dash-drugs">
+                    <button class="text-xs text-slate-500 hover:text-emerald-600 mb-3 font-semibold" onclick="switchDashView('home',null)">← Home</button>
+                    <div class="dash-card">
+                        <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-1">Drug Interaction Checker</h2>
+                        <p class="text-xs md:text-sm text-slate-500 mb-3">Add everything you're taking.</p>
+                        <div class="flex flex-wrap gap-1.5 mb-3" id="drugList"></div>
+                        <div class="flex gap-2 mb-3"><input type="text" id="customDrugInput" placeholder="Type drug name + Enter" class="flex-1 form-input !py-2 text-sm" onkeydown="if(event.key==='Enter')addCustomDrug()"><button class="cta-btn !py-2 !px-3" onclick="addCustomDrug()"><iconify-icon icon="mdi:plus" class="text-base"></iconify-icon></button></div>
+                        <div class="flex flex-wrap gap-1.5 mb-4"><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Paracetamol')">Paracetamol</div><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Diclofenac')">Diclofenac</div><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Ibuprofen')">Ibuprofen</div><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Lisinopril')">Lisinopril</div><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Metformin')">Metformin</div><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Amlodipine')">Amlodipine</div><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Neem Extract')">Neem</div><div class="drug-pill severity-neutral !text-xs" onclick="addDrug(this,'Zobo')">Zobo</div></div>
+                        <button class="cta-btn w-full md:w-auto text-sm !bg-gradient-to-r !from-purple-500 !to-pink-500" onclick="checkDrugs()"><iconify-icon icon="mdi:pill" class="mr-1"></iconify-icon>Check Interactions</button>
+                        <div id="drugOutput" class="mt-4 hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="bottom-nav lg:hidden">
+            <div class="flex justify-around">
+                <div class="bottom-nav-item active" onclick="switchDashView('home',this)"><iconify-icon icon="mdi:home" class="text-xl"></iconify-icon><span>Home</span></div>
+                <div class="bottom-nav-item" onclick="switchDashView('symptoms',this)"><iconify-icon icon="mdi:magnify-scan" class="text-xl"></iconify-icon><span>Symptoms</span></div>
+                <div class="bottom-nav-item" onclick="switchDashView('advocacy',this)"><iconify-icon icon="mdi:shield-sword" class="text-xl"></iconify-icon><span>Brief</span></div>
+                <div class="bottom-nav-item" onclick="switchDashView('translate',this)"><iconify-icon icon="mdi:translate" class="text-xl"></iconify-icon><span>Labs</span></div>
+                <div class="bottom-nav-item" onclick="switchDashView('drugs',this)"><iconify-icon icon="mdi:pill" class="text-xl"></iconify-icon><span>Drugs</span></div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<script>
+let currentPage='landing';let userData={name:'',age:'',gender:'',blood:'',language:'English'};let activeDrugs=[];let selectedLang='English';let profileOpen=false;
+function navigateTo(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');currentPage=page;window.scrollTo(0,0);if(page==='dashboard')updateDashboard();}
+function toggleMobile(){const m=document.getElementById('mobileMenu');m.classList.toggle('translate-x-full');m.classList.toggle('translate-x-0');}
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function handleWaitlist(){const e=document.getElementById('waitlistEmail').value;if(e&&e.includes('@')){showToast("🎉 You're on the waitlist!");document.getElementById('waitlistEmail').value='';}else{showToast('Please enter a valid email.');}}
+function toggleProfile(){profileOpen=!profileOpen;document.getElementById('profileDropdown').classList.toggle('open',profileOpen);}
+document.addEventListener('click',(e)=>{if(profileOpen&&!e.target.closest('#profileDropdown')&&!e.target.closest('#dashAvatarBtn')){profileOpen=false;document.getElementById('profileDropdown').classList.remove('open');}});
+function goToStep(step){if(step>=4){userData.name=document.getElementById('userName')?.value||'there';userData.age=document.getElementById('userAge')?.value||'—';userData.gender=document.getElementById('userGender')?.value||'—';userData.blood=document.getElementById('userBlood')?.value||'';}document.querySelectorAll('.onboard-step').forEach(s=>s.classList.remove('active'));document.querySelector(`.onboard-step[data-step="${step}"]`).classList.add('active');document.querySelectorAll('.progress-dot').forEach(dot=>{const s=parseInt(dot.dataset.step);dot.classList.remove('active','done');if(s===step)dot.classList.add('active');else if(s<step)dot.classList.add('done');});}
+function toggleCheckbox(el){el.classList.toggle('selected');}
+function selectOption(el,group){el.parentElement.querySelectorAll('.step-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');if(group==='language')userData.language=el.querySelector('.font-semibold').textContent;}
+function completeOnboarding(){const c=document.querySelector('.onboard-step[data-step="4"] .feature-card');for(let i=0;i<20;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.cssText=`left:${Math.random()*100}%;top:30%;background:${['#10b981','#fbbf24','#f87171','#60a5fa'][Math.floor(Math.random()*4)]};animation-delay:${Math.random()*0.5}s;`;c.appendChild(p);setTimeout(()=>p.remove(),2500);}showToast('🎉 Welcome!');setTimeout(()=>navigateTo('dashboard'),1200);}
+function updateDashboard(){const n=userData.name||'there';const fn=n!=='there'?n.split(' ')[0]:'there';const i=n!=='there'?n.charAt(0).toUpperCase():'T';document.getElementById('dashUserName').textContent=fn;if(document.getElementById('dashUserNameMobile'))document.getElementById('dashUserNameMobile').textContent=fn;document.getElementById('dashAvatarBtn').textContent=i;document.getElementById('d-name').textContent=n;document.getElementById('d-age').textContent=userData.age;document.getElementById('d-gender').textContent=userData.gender;document.getElementById('d-lang').textContent=userData.language;document.getElementById('profileInitial').textContent=i;document.getElementById('profileName').textContent=n;document.getElementById('profileAge').textContent=userData.age;document.getElementById('profileGender').textContent=userData.gender;document.getElementById('profileBlood').textContent=userData.blood||'—';document.getElementById('profileLang').textContent=userData.language;}
+function switchDashView(view,el){document.querySelectorAll('.dash-view').forEach(v=>v.classList.remove('active'));document.getElementById('dash-'+view).classList.add('active');document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active'));if(el&&el.classList.contains('sidebar-item'))el.classList.add('active');if(el&&el.classList.contains('bottom-nav-item'))el.classList.add('active');if(!el){document.querySelectorAll('.sidebar-item').forEach(s=>{if(s.textContent.trim().toLowerCase().includes(view==='home'?'home':view))s.classList.add('active');});document.querySelectorAll('.bottom-nav-item').forEach(b=>{if(b.textContent.trim().toLowerCase().includes(view==='home'?'home':view))b.classList.add('active');});}window.scrollTo(0,0);}
+
+const demoResponses={morning_headache:{rootChain:['Persistent Headache','Morning Worsening','↑ Intracranial Pressure','? Hypertension'],questions:['"Could my morning headaches indicate raised pressure? I\'d like 24hr BP monitoring."','"Can we rule out anything serious? I\'d like a brain MRI."'],tests:['24hr Ambulatory BP','Brain MRI','Full Blood Count','ESR'],urgency:'moderate'},fatigue_swelling:{rootChain:['Chronic Fatigue','Leg Swelling','Night Urination','Kidney Dysfunction','? CKD'],questions:['"My symptoms point to kidneys — can we check kidney function?"','"Could I have early kidney disease? I\'d like eGFR checked."'],tests:['Serum Creatinine + eGFR','Urine Protein Ratio','HbA1c','Renal Ultrasound'],urgency:'high'},chest_cough:{rootChain:['Chest Pain After Eating','Bitter Taste','Nighttime Cough','GERD','? Esophageal complications'],questions:['"Could my chest pain and cough be acid reflux? I\'d like evaluated for GERD."'],tests:['Upper GI Endoscopy','24hr pH Monitoring','Chest X-ray'],urgency:'low'},default:{rootChain:['Multiple Symptoms','Cross-system Analysis','? Systemic cause'],questions:['"Could these be connected? I\'d like a comprehensive workup."'],tests:['Comprehensive Metabolic Panel','Full Blood Count','Thyroid Function'],urgency:'moderate'}};
+function getResponseKey(i){const l=i.toLowerCase();if(l.includes('headache')||l.includes('head')||l.includes('morning'))return'morning_headache';if(l.includes('tired')||l.includes('fatigue')||l.includes('swell')||l.includes('pee'))return'fatigue_swelling';if(l.includes('chest')||l.includes('cough')||l.includes('bitter')||l.includes('burn'))return'chest_cough';return'default';}
+function setSymptomPreset(t){document.getElementById('symptomTextarea').value=t;}
+function analyzeSymptoms(){const t=document.getElementById('symptomTextarea').value.trim();if(!t){showToast("Tell me how you're feeling first.");return;}const d=demoResponses[getResponseKey(t)];const uC={low:'text-emerald-600 bg-emerald-50 border-emerald-200',moderate:'text-amber-600 bg-amber-50 border-amber-200',high:'text-red-600 bg-red-50 border-red-200'};const uL={low:'Low',moderate:'Moderate',high:'High — See a Doctor Soon'};document.getElementById('symptomOutput').innerHTML=`<div class="space-y-4" style="animation:slideUp 0.5s ease forwards"><div class="bg-slate-50 rounded-xl p-4 border border-slate-100"><div class="text-sm text-slate-700 mb-3">Based on what you've described:</div><div class="bg-emerald-50 border border-emerald-100 rounded-lg p-3 mb-3"><div class="text-xs text-emerald-700 font-semibold mb-2">Root Cause Chain</div><div class="flex flex-wrap items-center gap-1 text-xs">${d.rootChain.map((item,i)=>{const isLast=i===d.rootChain.length-1;return`<span class="px-2 py-1 rounded ${isLast?'bg-emerald-200 border border-emerald-300 text-emerald-800 font-bold':'bg-white border border-slate-200 text-slate-600'}">${item}</span>`;}).join('<iconify-icon icon="mdi:chevron-right" class="text-emerald-400"></iconify-icon>')}</div></div><div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Urgency:</span><span class="px-2.5 py-1 rounded-full border ${uC[d.urgency]} font-semibold">${uL[d.urgency]}</span></div></div><div class="bg-amber-50 border border-amber-100 rounded-xl p-4"><h4 class="font-bold text-amber-800 text-sm mb-2">What to Ask Your Doctor</h4><div class="space-y-1.5">${d.questions.map(q=>`<div class="text-xs text-slate-700">${q}</div>`).join('')}</div></div><div class="bg-white border border-slate-200 rounded-xl p-4"><h4 class="font-bold text-slate-900 text-sm mb-2">Tests to Request</h4><div class="flex flex-wrap gap-1.5">${d.tests.map(t=>`<span class="px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-[10px] text-slate-700 font-medium">${t}</span>`).join('')}</div></div><div class="text-[10px] text-slate-400">⚠️ Not a diagnosis. Always consult a healthcare professional.</div></div>`;}
+
+function generateBrief(){const i=document.getElementById('advocacyInput').value.trim();if(!i){showToast('Describe your symptoms first.');return;}const d=demoResponses[getResponseKey(i)];const o=document.getElementById('briefOutput');o.classList.remove('hidden');o.innerHTML=`<div class="bg-amber-50 border border-amber-100 rounded-xl p-5 space-y-3" style="animation:slideUp 0.5s ease forwards"><h3 class="font-bold text-amber-800 text-sm">Your Advocacy Brief</h3><div><div class="text-[10px] font-semibold text-slate-500 mb-1">QUESTIONS TO ASK</div>${d.questions.map((q,i)=>`<div class="text-xs text-slate-700 mb-1.5"><span class="text-amber-600 font-bold">Q${i+1}.</span> ${q}</div>`).join('')}</div><div><div class="text-[10px] font-semibold text-slate-500 mb-1">TESTS TO REQUEST</div><div class="flex flex-wrap gap-1.5">${d.tests.map(t=>`<span class="px-2 py-1 rounded-full bg-white border border-amber-200 text-[10px] text-slate-700 font-medium">${t}</span>`).join('')}</div></div><div class="flex gap-2 pt-1"><button class="cta-btn-outline !border-amber-400 !text-amber-700 !py-2 !px-3 !text-xs" onclick="copyBrief()"><iconify-icon icon="mdi:content-copy" class="mr-1"></iconify-icon>Copy</button><button class="cta-btn !bg-gradient-to-r !from-amber-500 !to-orange-500 !py-2 !px-3 !text-xs" onclick="downloadBrief()"><iconify-icon icon="mdi:download" class="mr-1"></iconify-icon>Download</button></div></div>`;}
+function copyBrief(){const el=document.querySelector('#briefOutput .bg-amber-50');if(el){navigator.clipboard.writeText(el.innerText).then(()=>showToast('📋 Copied!'));}}
+function downloadBrief(){const el=document.querySelector('#briefOutput .bg-amber-50');if(!el)return;const b=new Blob([el.innerText],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='TraceRoot-Brief.txt';a.click();showToast('📄 Downloaded!');}
+
+function setLang(b,l){selectedLang=l;document.querySelectorAll('.lang-toggle').forEach(x=>x.classList.remove('active'));b.classList.add('active');}
+function handleLabFile(e){const f=e.target.files[0];if(f){const fn=document.getElementById('labFileName');fn.classList.remove('hidden');fn.querySelector('span').textContent=f.name;showToast('📸 File uploaded!');}}
+function translateLab(){const i=document.getElementById('labInput').value.trim();if(!i){showToast('Paste your lab results.');return;}const t={'English':`"Your results show elevated blood sugar (HbA1c/FBS), indicating diabetes. Your body isn't managing blood sugar properly — you need to see a doctor soon. Kidney markers look fine for now, but controlling blood sugar is critical."`,'Pidgin':`"Your sugar level dey high well-well. Dis mean say your body no dey manage sugar properly — na diabetes be dis. You need see doctor sharp sharp. Your kidney still dey okay sha, but if you no handle dis sugar matter, e go spoil your kidney later."`,'Yorùbá':`"Igbeyin iwadii re fihan pe iye suga ninu eje re ga, eyi tumo si aisan suga. E nilo lati wo dokita kiakia. Awọn ami kidney re wa daara, sugbon ki o toju suga naa pẹ."`,'Igbo':`"Nsonaazụ nyocha gị gosiri na ọbara shuga gị dị elu, nke pụtara na ị nwere ọrịa shuga. Ikwesịrị ịhụ dọkịta ozugbo. Akara kidney gị dị mma ugbua."`,'Hausa':`"Sakamakon gwajin naka yana nuna cewa sukari a jinin naka ta tashi, wanda ke nuna cutar sukari. Ka bukaci ka ga likita da sauri. Alamomin koda nku suna da kyau."`};const o=document.getElementById('translateOutput');o.classList.remove('hidden');o.innerHTML=`<div class="bg-blue-50 border border-blue-100 rounded-xl p-5 space-y-3" style="animation:slideUp 0.5s ease forwards"><h3 class="font-bold text-blue-800 text-sm">Translation in ${selectedLang}</h3><div class="bg-white rounded-lg p-3 border border-blue-100 text-xs text-slate-700 leading-relaxed">${t[selectedLang]||t['English']}</div><div class="flex gap-2"><button class="cta-btn-outline !border-blue-400 !text-blue-700 !py-2 !px-3 !text-xs" onclick="copyTrans()"><iconify-icon icon="mdi:content-copy" class="mr-1"></iconify-icon>Copy</button><button class="cta-btn !bg-gradient-to-r !from-blue-500 !to-indigo-500 !py-2 !px-3 !text-xs" onclick="downloadTrans()"><iconify-icon icon="mdi:download" class="mr-1"></iconify-icon>Download</button></div></div>`;}
+function copyTrans(){const el=document.querySelector('#translateOutput .bg-white.border-blue-100');if(el)navigator.clipboard.writeText(el.innerText).then(()=>showToast('📋 Copied!'));}
+function downloadTrans(){const el=document.querySelector('#translateOutput .bg-white.border-blue-100');if(!el)return;const b=new Blob([el.innerText],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='TraceRoot-Translation.txt';a.click();showToast('📄 Downloaded!');}
+
+function addDrug(el,n){if(activeDrugs.includes(n)){activeDrugs=activeDrugs.filter(d=>d!==n);el.classList.remove('severity-caution');el.classList.add('severity-neutral');}else{activeDrugs.push(n);el.classList.remove('severity-neutral');el.classList.add('severity-caution');}renderDrugList();}
+function addCustomDrug(){const i=document.getElementById('customDrugInput');const n=i.value.trim();if(!n)return;if(activeDrugs.includes(n)){showToast('Already added.');return;}activeDrugs.push(n);i.value='';renderDrugList();showToast(`${n} added.`);}
+function removeDrug(n){activeDrugs=activeDrugs.filter(d=>d!==n);document.querySelectorAll('#drugPillBox .drug-pill').forEach(p=>{if(p.textContent.trim()===n){p.classList.remove('severity-caution');p.classList.add('severity-neutral');}});renderDrugList();}
+function renderDrugList(){document.getElementById('drugList').innerHTML=activeDrugs.map(d=>`<span class="drug-pill severity-safe !text-xs">${d} <span onclick="removeDrug('${d.replace(/'/g,"\\'")}')" class="ml-0.5 cursor-pointer hover:text-red-500 font-bold">×</span></span>`).join('');}
+function checkDrugs(){if(activeDrugs.length<2){showToast('Add at least 2 drugs.');return;}const o=document.getElementById('drugOutput');o.classList.remove('hidden');const ints=[];if(activeDrugs.includes('Diclofenac')&&activeDrugs.includes('Lisinopril'))ints.push({s:'danger',d:'Diclofenac + Lisinopril',desc:'NSAIDs with ACE inhibitors increase kidney damage risk significantly.'});if(activeDrugs.includes('Diclofenac')&&activeDrugs.includes('Ibuprofen'))ints.push({s:'danger',d:'Diclofenac + Ibuprofen',desc:'Two NSAIDs together dramatically increase stomach bleeding risk.'});if(activeDrugs.includes('Neem Extract')&&(activeDrugs.includes('Diclofenac')||activeDrugs.includes('Ibuprofen')))ints.push({s:'caution',d:`Neem + ${activeDrugs.includes('Diclofenac')?'Diclofenac':'Ibuprofen'}`,desc:'Neem may increase bleeding risk with NSAIDs.'});if(activeDrugs.includes('Zobo')&&activeDrugs.includes('Lisinopril'))ints.push({s:'caution',d:'Zobo + Lisinopril',desc:'Hibiscus + ACE inhibitor may cause hypotension.'});if(activeDrugs.includes('Zobo')&&activeDrugs.includes('Amlodipine'))ints.push({s:'caution',d:'Zobo + Amlodipine',desc:'Hibiscus may increase Amlodipine effects, dropping BP too low.'});if(ints.length===0)ints.push({s:'safe',d:'All selected drugs',desc:'No known dangerous interactions found in our database.'});const sB={safe:'bg-emerald-50 border-emerald-100',caution:'bg-amber-50 border-amber-100',danger:'bg-red-50 border-red-100'};const sT={safe:'text-emerald-700',caution:'text-amber-700',danger:'text-red-700'};const sL={safe:'SAFE',caution:'CAUTION',danger:'DANGER'};o.innerHTML=`<div class="space-y-2" style="animation:slideUp 0.5s ease forwards">${ints.map(i=>`<div class="${sB[i.s]} border rounded-xl p-3"><div class="text-xs font-bold ${sT[i.s]} mb-0.5">${sL[i.s]}: ${i.d}</div><p class="text-[10px] text-slate-600">${i.desc}</p></div>`).join('')}</div>`;}
+
+// Hero Canvas - Mobile Optimized & Visible
+const canvas=document.getElementById('heroCanvas');
+if(canvas){const ctx=canvas.getContext('2d');let nodes=[];let mouseX=-200,mouseY=-200;
+function resizeCanvas(){canvas.width=canvas.parentElement.offsetWidth;canvas.height=canvas.parentElement.offsetHeight;initNodes();}
+class Node{constructor(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.p=Math.random()*Math.PI*2;}
+update(){this.x+=this.vx;this.y+=this.vy;this.p+=0.02;if(this.x<0||this.x>canvas.width)this.vx*=-1;if(this.y<0||this.y>canvas.height)this.vy*=-1;}}
+function initNodes(){const isMobile=canvas.width<768;const density=isMobile?8000:12000;const count=Math.min(isMobile?60:80,Math.floor((canvas.width*canvas.height)/density));nodes=Array.from({length:count},()=>new Node());}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+canvas.parentElement.addEventListener('mousemove',(e)=>{const r=canvas.getBoundingClientRect();mouseX=e.clientX-r.left;mouseY=e.clientY-r.top;});
+canvas.parentElement.addEventListener('touchmove',(e)=>{e.preventDefault();const r=canvas.getBoundingClientRect();mouseX=e.touches[0].clientX-r.left;mouseY=e.touches[0].clientY-r.top;},{passive:false});
+canvas.parentElement.addEventListener('touchend',()=>{mouseX=-200;mouseY=-200;});
+function animate(){if(currentPage!=='landing'){requestAnimationFrame(animate);return;}ctx.clearRect(0,0,canvas.width,canvas.height);const isMobile=canvas.width<768;const rMin=isMobile?1.5:1.5;const rMax=isMobile?4:4.5;const baseOp=isMobile?0.35:0.25;const maxOp=isMobile?0.7:0.6;const md=isMobile?140:180;
+nodes.forEach(n=>{n.update();const pulse=Math.sin(n.p)*0.3+0.7;const r=(rMin+Math.random()*(rMax-rMin))*pulse;const op=(baseOp+Math.random()*(maxOp-baseOp))*pulse;ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=`rgba(16,185,129,${op})`;ctx.fill();});
+for(let i=0;i<nodes.length;i++){for(let j=i+1;j<nodes.length;j++){const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<md){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(16,185,129,${(1-d/md)*0.12})`;ctx.lineWidth=isMobile?0.6:0.8;ctx.stroke();}}
+const dx=nodes[i].x-mouseX,dy=nodes[i].y-mouseY,d=Math.sqrt(dx*dx+dy*dy);const mRange=isMobile?160:220;if(d<mRange){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(mouseX,mouseY);ctx.strokeStyle=`rgba(16,185,129,${(1-d/mRange)*0.35})`;ctx.lineWidth=isMobile?1:1.2;ctx.stroke();}}
+requestAnimationFrame(animate);}animate();}
+
+const ro=new IntersectionObserver((e)=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1});document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+</script>
+</body>
+</html>
